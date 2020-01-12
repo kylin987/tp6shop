@@ -36,4 +36,15 @@ return [
     //     'length'=>4,
     //    ...
     //],
+
+
+    'len5'  => [
+        'length'    => 5,
+    ],
+    'len4'  => [
+        'length'    => 4,
+    ],
+    'len3'  => [
+        'length'    => 3,
+    ],
 ];

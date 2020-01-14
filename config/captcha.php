@@ -43,6 +43,8 @@ return [
     ],
     'len4'  => [
         'length'    => 4,
+        // 验证码字符集合
+        'codeSet'  => '23456789',
     ],
     'len3'  => [
         'length'    => 3,

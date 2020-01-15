@@ -91,4 +91,8 @@ abstract class BaseController
         return $v->failException(true)->check($data);
     }
 
+    public function __call($name, $arguments) {
+        return show(config('status.error'), "该方法{$name}不存在", null, 400);
+    }
+
 }

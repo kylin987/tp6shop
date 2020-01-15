@@ -12,15 +12,20 @@ use AlibabaCloud\Client\Exception\ServerException;
 class AliSms
 {
     
+    /**
+     * 阿里云发送短信验证码
+    */   
     public static function sendCode(string $phone, int $code)  : bool{
         if (empty($phone) || empty($code)) {
             return false;
         }
 
-        AlibabaCloud::accessKeyClient('<accessKeyId>', '<accessSecret>')
-                        ->regionId('cn-hangzhou')
+        AlibabaCloud::accessKeyClient(config('aliyun.access_key_id'), config('aliyun.access_key_secret'))
+                        ->regionId(config('aliyun.region_id'))
                         ->asDefaultClient();
-
+        $templateParam = [
+            'code'  => $code,
+        ];
         try {
             $result = AlibabaCloud::rpc()
                                   ->product('Dysmsapi')
@@ -28,22 +33,26 @@ class AliSms
                                   ->version('2017-05-25')
                                   ->action('SendSms')
                                   ->method('POST')
-                                  ->host('dysmsapi.aliyuncs.com')
+                                  ->host(config('aliyun.host'))
                                   ->options([
                                                 'query' => [
-                                                  'RegionId' => "cn-hangzhou",
-                                                  'PhoneNumbers' => "15890054823",
-                                                  'SignName' => "言致商城",
-                                                  'TemplateCode' => "SMS_182680347",
-                                                  'TemplateParam' => "{\"code\":\"457165\"}",
+                                                  'RegionId' => config('aliyun.region_id'),
+                                                  'PhoneNumbers' => $phone,
+                                                  'SignName' => config('aliyun.sign_name'),
+                                                  'TemplateCode' => config('aliyun.template_code'),
+                                                  'TemplateParam' => json_encode($templateParam),
                                                 ],
                                             ])
                                   ->request();
-            print_r($result->toArray());
+            //print_r($result->toArray());
         } catch (ClientException $e) {
-            echo $e->getErrorMessage() . PHP_EOL;
+            return false;
+            //echo $e->getErrorMessage() . PHP_EOL;
         } catch (ServerException $e) {
-            echo $e->getErrorMessage() . PHP_EOL;
+            return false;
+            //echo $e->getErrorMessage() . PHP_EOL;
         }
+
+        return true;
     }
 }

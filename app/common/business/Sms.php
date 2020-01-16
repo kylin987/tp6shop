@@ -12,10 +12,15 @@ use app\common\lib\Num;
 class Sms
 {
     
-    public static function sendCode(string $phoneNumber, int $len) :bool{
+    public static function sendCode(string $phoneNumber, int $len, string $type = "ali") :bool{
         //生成短信验证码
         $code = Num::getCode($len);
-        $sms = AliSms::sendCode($phoneNumber, $code);
+        //$sms = AliSms::sendCode($phoneNumber, $code);
+
+        //工厂模式
+        $type = ucfirst($type);
+        $class = "app\common\lib\sms\\".$type."Sms";
+        $sms = $class::sendCode($phoneNumber, $code);
         if ($sms) {
             //需要把短信验证码记录到Redis，并且给出一个失效时间
             cache(config('redis.code_pre').$phoneNumber, $code, config('redis.code_expire'));

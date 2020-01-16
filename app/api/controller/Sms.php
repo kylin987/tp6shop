@@ -24,7 +24,7 @@ class Sms extends BaseController
         }
 
         //调用business层的逻辑
-        if (SmsBus::sendCode($phoneNumber,6)) {
+        if (SmsBus::sendCode($phoneNumber,6,"ali")) {
             return show(config('status.success'), "发送验证码成功");
         }
         return show(config('status.error'), "发送验证码失败");

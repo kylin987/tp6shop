@@ -23,8 +23,15 @@ class Sms extends BaseController
             return show(config('status.error'), $e->getError());
         }
 
+        //分流
+        if (rand(1,10) <= 2) {
+            $type = "ali";
+        }else {
+            $type = "yuntz";
+        }
+
         //调用business层的逻辑
-        if (SmsBus::sendCode($phoneNumber,6,"ali")) {
+        if (SmsBus::sendCode($phoneNumber,6,$type)) {
             return show(config('status.success'), "发送验证码成功");
         }
         return show(config('status.error'), "发送验证码失败");

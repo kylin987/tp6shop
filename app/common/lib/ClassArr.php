@@ -13,6 +13,7 @@ class ClassArr
             'ali'   => "app\common\lib\sms\AliSms",
             'baidu' => "app\common\lib\sms\BaiduSms",
             'jd'    => "app\common\lib\sms\JdSms",
+            'yuntz' => "app\common\lib\sms\YuntzSms",
         ];
     }
 

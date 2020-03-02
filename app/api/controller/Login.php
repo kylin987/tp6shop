@@ -1,6 +1,4 @@
 <?php
-
-declare(strict_types=1);
 namespace app\api\controller;
 
 use app\BaseController;
@@ -12,7 +10,7 @@ use think\facade\Request;
 class Login extends BaseController
 {
     
-    public function index() :object {
+    public function index() {
         if (!$this->request->isPost()) {
             return show(config('status.error'),'非法请求');
         }

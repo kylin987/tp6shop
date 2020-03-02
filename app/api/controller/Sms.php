@@ -24,7 +24,7 @@ class Sms extends BaseController
         }
 
         //分流
-        if (rand(1,10) <= 2) {
+        if (rand(1,10) <= 8) {
             $type = "ali";
         }else {
             $type = "yuntz";

@@ -18,7 +18,7 @@ class AdminUser extends Model
         }
 
         $where = [
-            'username'  => $username,
+            'username'  => trim($username),
         ];
 
         $result = $this->where($where)->find();

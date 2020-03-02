@@ -16,16 +16,21 @@ function kMd5($str,$salt) {
     return md5(md5($str)."_".$salt);
 }
 
+
+
 /**
- * 生成随机字符串
- * @param int $length
- * @return string
+ * 根据debug抛送异常
+ * @param obj $e 异常信息
+ * @param int $code
+ * @param string $message 自定义提示信息 
+ * @return obj
  */
-function createNonceStr($length = 16) {
-    $chars = "abcdefghjkmnpqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ23456789";
-    $str = "";
-    for ($i = 0; $i < $length; $i++) {
-      $str .= substr($chars, mt_rand(0, strlen($chars) - 1), 1);
+function throwE($e,$code = 0,$message) {
+    if (config('app.app_debug')) {
+        throw new \think\Exception($e->getMessage(), $code);
+    }else{
+        throw new \think\Exception($message, $code);
     }
-    return $str;
 }
+
+

@@ -26,6 +26,7 @@ class Sms
         $classStats = ClassArr::smsClassStat();
         $classObj = ClassArr::initClass($type, $classStats);
         $sms = $classObj::sendCode($phoneNumber, $code);
+        //$sms = 1;
         if ($sms) {
             //需要把短信验证码记录到Redis，并且给出一个失效时间
             cache(config('redis.code_pre').$phoneNumber, $code, config('redis.code_expire'));

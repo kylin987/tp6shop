@@ -43,7 +43,7 @@ class Arr
         foreach ($data as $k => $v) {
             if (!empty($v['list'])) {
                 $data[$k]['list'] = array_slice($v['list'], 0 , $secondCount);
-                foreach ($v['list'] as $kk => $vv) {
+                foreach ($data[$k]['list'] as $kk => $vv) {
                      if (!empty($vv['list'])) {
                          $data[$k]['list'][$kk]['list'] = array_slice($vv['list'], 0, $threeCount);
                      }

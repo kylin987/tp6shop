@@ -24,7 +24,7 @@ class Category extends ApiBase
         try {
             $categorys = $this->CategoryBis->getNormalCategorys();
         } catch(\Exception $e){
-            log::error("getNormalCategorys-error".$e->getMessage());
+            Log::error("getNormalCategorys-error".$e->getMessage());
             return Show::success("","内部异常");
         }
         if (empty($categorys)) {

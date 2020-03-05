@@ -2,6 +2,7 @@
 
 namespace app\common\business;
 use app\common\model\mysql\Category as CategoryModel;
+use think\facade\Log;
 
 class Category {
 
@@ -173,7 +174,7 @@ class Category {
             throw new \think\Exception("不存在该记录");
         }
 
-        return $category();
+        return $category->toArray();
     }
 
     /**
@@ -191,6 +192,7 @@ class Category {
         while ($pid != 0) {
             $info = $this->model->getFieldById($pid,$field,true);
             if ($info) {
+                $info = $info->toArray();
                 $breadTree[] = $info;
                 $pid = $info['pid'];
             }
@@ -199,5 +201,22 @@ class Category {
         $breadTree[] = ['id'=>0,'pid'=>0, 'name'=>"栏目首页"];
 
         return array_reverse($breadTree);
+    }
+
+    /**
+     * 根据上级id获取下级所有栏目
+     * @param  integer $pid   [description]
+     * @param  string  $field [description]
+     * @return [type]         [description]
+     */
+    public function getNormalByPid($pid = 0, $field = "id,name,pid"){
+        try {
+            $res = $this->model->getNormalByPid($pid, $field);
+        } catch(\Exception $e) {
+            Log::error("getNormalByPid".$e->getMessage());
+            return [];
+        }
+        
+        return $res->toArray();
     }
 }

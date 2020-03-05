@@ -5,9 +5,14 @@ namespace app\admin\controller;
 use app\BaseController;
 use think\facade\View;
 use app\common\business\Category as CategoryBis;
+use app\common\lib\Show;
 
 class Category extends BaseController
 {
+    public $CategoryBis = null;
+    public function __construct(){
+        $this->CategoryBis = new CategoryBis();
+    }
     /**
      * 栏目列表
      * @return string
@@ -19,15 +24,14 @@ class Category extends BaseController
             'pid'   => $pid,
         ];
 
-        $CategoryBis = new CategoryBis();
         try {
-            $categorys = $CategoryBis->getLists($data, 5);
+            $categorys = $this->CategoryBis->getLists($data, 5);
         } catch (\Exception $e) {
             $categorys = [];
         }
 
         //获取面包屑导航
-        $breadTree = $CategoryBis->getBreadNav($pid);
+        $breadTree = $this->CategoryBis->getBreadNav($pid);
 
         View::assign('categorys',$categorys);
         View::assign('pid', $pid);
@@ -43,7 +47,7 @@ class Category extends BaseController
      */
     public function add() {
         try {
-            $categorys = (new CategoryBis())->getNormalCategorys();
+            $categorys = $this->CategoryBis->getNormalCategorys();
         } catch (\Exception $e) {
             $categorys = [];
         }
@@ -76,33 +80,33 @@ class Category extends BaseController
 
         $validate = (new \app\admin\validate\Category())->scene($scene);
         if (!$validate->check($data)) {
-            return show(config('status.error'), $validate->getError());
+            return Show::error($validate->getError());
         }
 
         try {
             if ($id){
-                $result = (new CategoryBis())->edit($data);
+                $result = $this->CategoryBis->edit($data);
             } else {
-                $result = (new CategoryBis())->add($data);
+                $result = $this->CategoryBis->add($data);
             }
 
         } catch (\Exception $e) {
-            return show(config('status.error'), $e->getMessage());
+            return Show::error($e->getError());
         }
 
-        return show(config('status.success'), "ok", $result);
+        return Show::success($resule);
     }
 
     public function edit() {
         $id = input("param.id", 0, "intval");
         if (empty($id)) {
-            return show(config('status.error'), "栏目id不存在");
+            return Show::error("栏目id不存在");
         }
 
-        $info = (new CategoryBis())->getInfoById($id);
+        $info = $this->CategoryBis->getInfoById($id);
 
         try {
-            $categorys = (new CategoryBis())->getNormalCategorys();
+            $categorys = $this->CategoryBis->getNormalCategorys();
         } catch (\Exception $e) {
             $categorys = [];
         }
@@ -128,21 +132,25 @@ class Category extends BaseController
 
         $validate = (new \app\admin\validate\Category())->scene('changeListOrder');
         if (!$validate->check($data)) {
-            return show(config('status.error'), $validate->getError());
+            return Show::error($validate->getError());
         }
         try {
-            $resule = (new CategoryBis())->updateCategory($data);
+            $resule = $this->CategoryBis->updateCategory($data);
         } catch (\Exception $e) {
-            return show(config('status.error'), $e->getMessage());
+            return Show::error($e->getError());
         }
 
         if ($resule) {
-            return show(config('status.success'), "排序成功", $resule);
+            return Show::success($resule,"排序成功");
         }
-        return show(config('status.error'), "排序失败");
+        return Show::error("排序失败");
 
     }
 
+    /**
+     * 修改栏目状态，包括删除99
+     * @return [type] [description]
+     */
     public function changeStatus(){
         $id = input("param.id", 0, "intval");
         $status = input("param.status", 0, "intval");
@@ -154,22 +162,41 @@ class Category extends BaseController
 
         $validate = (new \app\admin\validate\Category())->scene('changeStatus');
         if (!$validate->check($data)) {
-            return show(config('status.error'), $validate->getError());
+            return Show::error($validate->getError());
         }
 
         if (!in_array($status, \app\common\lib\Status::getTableStatus())) {
-            return show(config('status.error'), "参数错误");
+            return Show::error("参数错误");
         }
 
         try {
-            $resule = (new CategoryBis())->updateCategory($data);
+            $resule = $this->CategoryBis->updateCategory($data);
         } catch (\Exception $e) {
-            return show(config('status.error'), $e->getMessage());
+            return Show::error($e->getMessage());
         }
 
         if ($resule) {
-            return show(config('status.success'), "更新成功", $resule);
+            return Show::success($resule, "更新成功");
         }
-        return show(config('status.error'), "更新失败");
+        return Show::error("更新失败");
+    }
+
+    public function dialog(){
+        //获取正常的一级分类数据
+        $result = $this->CategoryBis->getNormalByPid();
+        return view("",[
+            "categorys" => json_encode($result),
+        ]);
+    }
+
+    /**
+     * 根据pid获取下级栏目信息
+     * @return [type] [description]
+     */
+    public function getByPid()
+    {
+        $pid = input("param.pid", 0, "intval");
+        $result = $this->CategoryBis->getNormalByPid($pid);
+        return Show::success($result);
     }
 }

@@ -21,7 +21,7 @@ class Show
         return json($results);
     }
 
-    public static function error($data = [], $message = "OK", $status = 0){
+    public static function error($message = "error",$status = 0, $data = []){
         $results = [
             'status'    => $status,
             'message'   => $message,

@@ -105,8 +105,27 @@ class Category extends Model
         if (!$isAll) {
             $where[] = ["status", "<>", config('status.mysql.table_delete')];
         }
-        $res = $this->where($where)->field($field)->find($id);
-        return $res->toArray();
+        return $this->where($where)->field($field)->find($id);
+         
+    }
+
+
+    public function getNormalByPid($pid, $field = "id, name, pid") {
+        $where = [
+            "pid"   => $pid,
+            "status" => config('status.mysql.table_normal'),
+        ];
+        $order = [
+            "listorder" => "desc",
+            "id"        => "asc",
+        ];
+
+        $res = $this->where($where)
+            ->field($field)
+            ->order($order)
+            ->select();
+        //halt($this->getLastSql());
+        return $res;
     }
 
 }

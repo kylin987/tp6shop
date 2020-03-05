@@ -12,20 +12,23 @@ class SpecsValue extends BaseBis {
     public $Model = null;
 
     public function __construct() {
+        parent::initialize();
         $this->Model = new SpecsValueModel();
     }
-    
+
     /**
      * 增加规格属性
-     * @param [type] $data [description]
+     * @param $data
+     * @return int|mixed
+     * @throws \think\Exception
      */
     public function add($data){
-        $data['status'] = 1;
+        $data['status'] = config('status.mysql.table_normal');
         $res = ($this->Model->getResultByWhere($data))->toArray();
         if ($res) {
             throw new \think\Exception("已存在该规格属性");            
         }        
-        $data['operate_user'] = $this->adminUser;        
+        $data['operate_user'] = $this->adminUser;
         try {
             $this->Model->save($data);
         }catch(\Exception $e){
@@ -34,12 +37,12 @@ class SpecsValue extends BaseBis {
         }
 
         return $this->Model->id;
-    }   
+    }
 
     /**
      * 获取规格id里的所有规格属性
-     * @param  [type] $specs_id [description]
-     * @return [type]           [description]
+     * @param $specs_id
+     * @return array
      */
     public function getBySpecsId($specs_id)
     {
@@ -56,9 +59,14 @@ class SpecsValue extends BaseBis {
         }
         return $result->toArray();
     }
+
     /**
      * 删除对应的规格属性
-     * @param [type] $id [description]
+     * @param $id
+     * @return bool
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function DelById($id){
         $res = $this->Model->find($id);

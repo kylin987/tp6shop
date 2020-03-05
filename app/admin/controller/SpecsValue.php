@@ -4,7 +4,6 @@ namespace app\admin\controller;
 use app\BaseController;
 use app\common\lib\Show;
 use app\common\business\SpecsValue as SpecsValueBis;
-use think\facade\Session;
 /**
  * 规格属性
  */
@@ -12,7 +11,7 @@ class SpecsValue extends BaseController
 {
     /**
      * 新增规格属性
-     * @return [type] [description]
+     * @return \think\response\Json
      */
     public function save(){
         $specsId = input("param.specs_id", 0, "intval");
@@ -42,7 +41,7 @@ class SpecsValue extends BaseController
 
     /**
      * 获取规格id里的所有规格属性
-     * @return [type] [description]
+     * @return \think\response\Json
      */
     public function getBySpecsId()
     {
@@ -53,10 +52,10 @@ class SpecsValue extends BaseController
         $result = (new SpecsValueBis())->getBySpecsId($specs_id);
         return Show::success($result);
     }
-    
+
     /**
      * 删除指定的规格属性99
-     * @return [type] [description]
+     * @return \think\response\Json
      */
     public function del()
     {

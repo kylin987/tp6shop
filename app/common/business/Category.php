@@ -4,11 +4,12 @@ namespace app\common\business;
 use app\common\model\mysql\Category as CategoryModel;
 use think\facade\Log;
 
-class Category {
+class Category extends BaseBis {
 
     public $model = null;
 
     public function __construct() {
+        parent::initialize();
         $this->model = new CategoryModel();
     }
 

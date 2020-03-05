@@ -94,7 +94,7 @@ class Category extends BaseController
             return Show::error($e->getError());
         }
 
-        return Show::success($resule);
+        return Show::success($result);
     }
 
     public function edit() {

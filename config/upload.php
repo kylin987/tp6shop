@@ -7,6 +7,6 @@
 return [
     'image' => [
         'allow_type'  => "jpg,gif,png,jpeg",
-        'max_size'  => "614400", //600k
+        'max_size'  => "400", //600k
     ],
 ];

@@ -23,11 +23,12 @@ class Category extends BaseController
         $data = [
             'pid'   => $pid,
         ];
+        $num = 5;
 
         try {
-            $categorys = $this->CategoryBis->getLists($data, 5);
+            $categorys = $this->CategoryBis->getLists($data, $num);
         } catch (\Exception $e) {
-            $categorys = [];
+            $categorys = \app\common\lib\Arr::getPaginateDefaultData($num);
         }
 
         //获取面包屑导航

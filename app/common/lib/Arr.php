@@ -6,11 +6,11 @@ namespace app\common\lib;
  */
 class Arr
 {
- 
+
     /**
      * 对数组进行树形组装
-     * @param  [type] $data [description]
-     * @return [type]       [description]
+     * @param $data
+     * @return array
      */
     public static function getTree($data){
         $items = [];
@@ -31,12 +31,12 @@ class Arr
     }
 
     /**
-     * 从树形结构中去除对应数目的分叉
-     * @param  [type]  $data        [description]
-     * @param  integer $firstCount  [description]
-     * @param  integer $secondCount [description]
-     * @param  integer $threeCount  [description]
-     * @return [type]               [description]
+     * 从树形结构中取出对应数目的分叉
+     * @param $data
+     * @param int $firstCount
+     * @param int $secondCount
+     * @param int $threeCount
+     * @return array
      */
     public static function sliceTreeArr($data, $firstCount = 5, $secondCount = 3, $threeCount = 5){
         $data = array_slice($data, 0, $firstCount);
@@ -51,5 +51,20 @@ class Arr
             }
         }
         return $data;
+    }
+
+    /**
+     * 分页默认返回的数据
+     * @return array
+     */
+    public static function getPaginateDefaultData($num) {
+        $result = [
+            'total' => 0,
+            'per_page'  => $num,
+            'current_page'  => 1,
+            'last_page' => 0,
+            'data'  => [],
+        ];
+        return $result;
     }
 }

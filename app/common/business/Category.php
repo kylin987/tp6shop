@@ -96,11 +96,12 @@ class Category extends BaseBis {
      */
     public function getLists($data, $num) {
         $list = $this->model->getLists($data, $num);
-        if (!$list) {
-            return [];
+        $result = $list->toArray();
+        if (!$result['data']) {
+            return \app\common\lib\Arr::getPaginateDefaultData($num);
         }
 
-        $result = $list->toArray();
+
         $result['render'] = $list->render();
         /**
          * 获取每个栏目下级栏目的数量的思路

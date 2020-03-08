@@ -21,7 +21,7 @@
                         <div class="layui-inline">
                             <label class="layui-form-label">商品名称</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="title" autocomplete="off" class="layui-input">
+                                <input type="text" name="title" autocomplete="off" class="layui-input" value="{notempty name='$filter.title'}{$filter.title}{/notempty}">
                             </div>
                         </div>
 
@@ -30,7 +30,7 @@
                             <div class="layui-input-inline" style="width: 280px;">
                                 <div class="layui-input-inline" style="width: 280px;">
                                     <input type="text" name="time" class="layui-input" id="test10"
-                                           placeholder=" - ">
+                                           placeholder=" - " value="{notempty name='$filter.time'}{$filter.time}{/notempty}">
                                 </div>
                             </div>
                         </div>
@@ -131,7 +131,7 @@
             , jump: function(obj, first){
                 //首次不执行
                 if(!first){
-                    location.href="?page="+obj.curr
+                    location.href="?page="+obj.curr+'{$filter.query|raw}'
                 }
             }
         });

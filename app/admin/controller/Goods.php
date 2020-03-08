@@ -13,6 +13,18 @@ class Goods extends BaseController
 
     public function index(){
         $data = [];
+        $filter = [];
+        $title = input("param.title", "", "trim");
+        $time = input("param.time", "", "trim");
+        if (!empty($title)) {
+            $data['title'] = $title;
+            $filter['title'] = $title;
+        }
+        if (!empty($time)) {
+            $data['create_time'] = explode(" - ", $time);
+            $filter['time'] = $time;
+        }
+
         $num = 5;
 
         try {
@@ -21,7 +33,18 @@ class Goods extends BaseController
             $goods = \app\common\lib\Arr::getPaginateDefaultData($num);
         }
 
+        $filter['query'] = '';
+        $query_array = explode("&",$this->request->query());
+        if (count($query_array) > 1){
+            unset($query_array[0]);
+            foreach ($query_array as $v){
+                if (!strstr($v, "page=") && !empty($v)){
+                    $filter['query'] .= "&".$v;
+                }
+            }
+        }
 
+        View::assign('filter',$filter);
         View::assign('goods',$goods);
         return View::fetch();
     }

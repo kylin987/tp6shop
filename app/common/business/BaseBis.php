@@ -31,14 +31,18 @@ class BaseBis {
     }
 
     public function getLists($data, $num) {
+        $likeKeys = [];
+        if (!empty($data)){
+            $likeKeys = array_keys($data);
+        }
         try {
-            $list = $this->model->getLists($data, $num);
+            $list = $this->model->getLists($data, $num,$likeKeys);
+            $result = $list->toArray();
         } catch (\Exception $e) {
             return \app\common\lib\Arr::getPaginateDefaultData($num);
         }
 
-        $result = $list->toArray();
-        $result['render'] = $list->render();
+        //$result['render'] = $list->render();
         return $result;
     }
 

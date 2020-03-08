@@ -74,41 +74,45 @@
                     </thead>
                     <tbody>
                     <!--一级类目循环-->
+                    {volist name="goods.data" id="vo"}
                     <tr>
-                        <td>1</td>
+                        <td>{$vo.id}</td>
                         <td>
                             <div class="layui-input-inline layui-text-center">
-                                <input type="text" value="1" data-id="1" class="changeSort layui-input">
+                                <input type="text" value="{$vo.listorder}" data-id="{$vo.id}" class="changeOrder layui-input">
                             </div>
                         </td>
-                        <td>商品1</td>
+                        <td>{$vo.title}</td>
                         <td class="show-img">
-                            <img  src="../images/default.png" data-src=""  style="width: 24px;height: 24px;" />
+                            <img  src="{$vo.recommend_image}" data-src="{$vo.recommend_image}"  style="width: 24px;height: 24px;" />
                         </td>
-                        <td>123</td>
-                        <td>发布时间</td>
-                        <td><input type="checkbox" checked name="status" lay-skin="switch"
+                        <td>{$vo.stock}</td>
+                        <td>{$vo.create_time}</td>
+                        <td data-id="{$vo.id}"><input type="checkbox" {if $vo.status == 1}checked{/if} name="status" lay-skin="switch"
                             lay-filter="switchStatus"
                             lay-text="开启|关闭"></td>
-                        <td><input type="checkbox" checked name="is_index_recommend" lay-skin="switch"
+                        <td data-id="{$vo.id}"><input type="checkbox" {if $vo.is_index_recommend == 1}checked{/if} name="is_index_recommend" lay-skin="switch"
                                    lay-filter="isIndexRecommend"
                                    lay-text="是|否"></td>
                         <td>
-                            <a class="layui-btn layui-btn-xs  edit" lay-event="edit">编辑</a>
-                            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete del-child" data-ptype="1"
-                                    lay-event="delete" data-id="$id">删除
+                            <a class="layui-btn layui-btn-xs  edit" lay-event="edit" data-id="{$vo.id}">编辑</a>
+                            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete delete" data-ptype="1"
+                                    lay-event="delete" data-id="{$vo.id}">删除
                             </a>
                         </td>
                     </tr>
+                    {/volist}
                     </tbody>
                 </table>
             </div>
+            <div id="pages"></div>
         </div>
     </div>
 </div>
 
 <script src="{__STATIC_PATH}/admin/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
 <script src="{__STATIC_PATH}/admin/lib/layui-v2.5.4/layui.js" charset="utf-8"></script>
+<script src="{__STATIC_PATH}/admin/js/common.js?v5" charset="utf-8"></script>
 <script>
     // 显示图片
 
@@ -118,11 +122,96 @@
             laypage = layui.laypage,
            laydate = layui.laydate;
 
+        laypage.render({ //分页
+            elem: 'pages'
+            , count: {$goods.total}
+            , theme: '#FFB800'
+            , limit: {$goods.per_page}
+            , curr: {$goods.current_page}
+            , jump: function(obj, first){
+                //首次不执行
+                if(!first){
+                    location.href="?page="+obj.curr
+                }
+            }
+        });
+
         //日期时间范围 搜索
         laydate.render({
             elem: '#test10'
             , type: 'datetime'
             , range: true
+        });
+
+        //监听状态 更改
+        form.on('switch(switchStatus)', function (obj) {
+            let id = obj.othis.parent().attr('data-id');
+            let status = obj.elem.checked ? 1 : 0;
+            $.ajax({
+                url: '{:url("changeStatus")}?id=' + id + '&status=' + status,
+                success: (res) => {
+                    if (res.status == 1) {
+                        //window.location.reload();
+                        layer.msg("修改成功")
+                    }else {
+                        layer.msg("修改失败");
+                    }
+                }
+            });
+            return false;
+        });
+        //监听推荐 更改
+        form.on('switch(isIndexRecommend)', function (obj) {
+            let id = obj.othis.parent().attr('data-id');
+            let is_index_recommend = obj.elem.checked ? 1 : 0;
+            $.ajax({
+                url: '{:url("changeRecommend")}?id=' + id + '&is_index_recommend=' + is_index_recommend,
+                success: (res) => {
+                    if (res.status == 1) {
+                        //window.location.reload();
+                        layer.msg("修改成功")
+                    }else {
+                        layer.msg("修改失败");
+                    }
+                }
+            });
+            return false;
+        });
+
+        // 删除分类
+        $('.delete').on('click', function () {
+            let id = $(this).attr('data-id');
+
+            layObj.box(`是否删除该商品`, () => {
+                let   url = '{:url("changeStatus")}?id=' + id + '&status=99'
+                layObj.get(url,  (res) =>{
+                    if (res.status == 1) {
+                        layer.msg("删除成功");
+                        window.location.reload();
+                    }else {
+                        layer.msg("删除失败");
+                    }
+                })
+
+            })
+        });
+        //修改排序
+        $('.changeOrder').on('change',function () {
+            let id = $(this).attr('data-id');
+            let val = $(this).val();
+
+            if(!val){
+                return;
+            }
+            let url = '{:url("listorder")}?id=' + id + '&listorder='+val;
+            layObj.get(url,function (res) {
+                if (res.status == 1) {
+                    window.location.reload();
+                }else {
+                    layer.msg("排序失败");
+                }
+            })
+
         });
 
         $('.show-img').on('click',function(){

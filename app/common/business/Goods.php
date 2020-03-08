@@ -83,4 +83,5 @@ class Goods extends BaseBis {
         }
 
     }
+
 }

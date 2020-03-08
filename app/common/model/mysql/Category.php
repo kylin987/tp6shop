@@ -48,26 +48,6 @@ class Category extends BaseModel
 
         return $this->where($where)->field($field)->order($order)->select();
     }
-
-    /**
-     * 获取栏目列表
-     * @param $where
-     * @param $num
-     * @return \think\Paginator
-     * @throws \think\db\exception\DbException
-     */
-    public function getLists($where, $num) {
-        $order = [
-            "listorder" => "desc",
-            "id"        => "asc",
-        ];
-        $result = $this->where("status", "<>", config('status.mysql.table_delete'))
-            ->where($where)
-            ->order($order)
-            ->paginate($num);
-        return $result;
-    }
-
     /**
      * 获取下级栏目数量
      * @param $pids

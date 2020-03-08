@@ -94,15 +94,11 @@ class Category extends BaseBis {
      * @return array
      * @throws \think\db\exception\DbException
      */
-    public function getLists($data, $num) {
-        $list = $this->model->getLists($data, $num);
-        $result = $list->toArray();
+    public function getListsAndChildCount($data, $num) {
+        $result = $this->getLists($data, $num);
         if (!$result['data']) {
-            return \app\common\lib\Arr::getPaginateDefaultData($num);
+            return $result;
         }
-
-
-        $result['render'] = $list->render();
         /**
          * 获取每个栏目下级栏目的数量的思路
          * 1、拿到当前获取的列表中的id，也就是他们下级栏目的pid
@@ -127,35 +123,6 @@ class Category extends BaseBis {
         }
 
         return $result;
-    }
-
-    /**
-     * 更新栏目信息
-     * @param $data
-     * @return bool
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function updateCategory($data) {
-        if (empty($data['id'])) {
-            throw new \think\Exception("栏目id异常");
-        }
-        $category = $this->model->getFieldById($data['id']);
-        if (empty($category)) {
-            throw new \think\Exception("不存在该记录");
-        }
-
-        $data['update_time'] = time();
-
-        try {
-            $result = $category->save($data);
-        } catch (\Exception $e) {
-            throwE($e, config('status.update_error'), "更新数据失败");
-        }
-        return $result;
-
     }
 
     /**

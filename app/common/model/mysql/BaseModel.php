@@ -60,4 +60,22 @@ class BaseModel extends Model
         return $this->where(['id'=>$id])->save($data);
     }
 
+    /**
+     * 获取对应列表的分页数据
+     * @param $where
+     * @param $num
+     * @return \think\Paginator
+     * @throws \think\db\exception\DbException
+     */
+    public function getLists($where, $num) {
+        $order = [
+            "listorder" => "desc",
+            "id"        => "desc",
+        ];
+        $result = $this->where("status", "<>", config('status.mysql.table_delete'))
+            ->where($where)
+            ->order($order)
+            ->paginate($num);
+        return $result;
+    }
 }

@@ -9,10 +9,6 @@ use app\common\lib\Show;
 
 class Category extends BaseController
 {
-    public $CategoryBis = null;
-    public function __construct(){
-        $this->CategoryBis = new CategoryBis();
-    }
     /**
      * 栏目列表
      * @return string
@@ -26,13 +22,13 @@ class Category extends BaseController
         $num = 5;
 
         try {
-            $categorys = $this->CategoryBis->getLists($data, $num);
+            $categorys = (new CategoryBis())->getListsAndChildCount($data, $num);
         } catch (\Exception $e) {
             $categorys = \app\common\lib\Arr::getPaginateDefaultData($num);
         }
 
         //获取面包屑导航
-        $breadTree = $this->CategoryBis->getBreadNav($pid);
+        $breadTree = (new CategoryBis())->getBreadNav($pid);
 
         View::assign('categorys',$categorys);
         View::assign('pid', $pid);
@@ -48,7 +44,7 @@ class Category extends BaseController
      */
     public function add() {
         try {
-            $categorys = $this->CategoryBis->getNormalCategorys();
+            $categorys = (new CategoryBis())->getNormalCategorys();
         } catch (\Exception $e) {
             $categorys = [];
         }
@@ -86,9 +82,9 @@ class Category extends BaseController
 
         try {
             if ($id){
-                $result = $this->CategoryBis->edit($data);
+                $result = (new CategoryBis())->edit($data);
             } else {
-                $result = $this->CategoryBis->add($data);
+                $result = (new CategoryBis())->add($data);
             }
 
         } catch (\Exception $e) {
@@ -104,10 +100,10 @@ class Category extends BaseController
             return Show::error("栏目id不存在");
         }
 
-        $info = $this->CategoryBis->getInfoById($id);
+        $info = (new CategoryBis())->getInfoById($id);
 
         try {
-            $categorys = $this->CategoryBis->getNormalCategorys();
+            $categorys = (new CategoryBis())->getNormalCategorys();
         } catch (\Exception $e) {
             $categorys = [];
         }
@@ -136,7 +132,7 @@ class Category extends BaseController
             return Show::error($validate->getError());
         }
         try {
-            $resule = $this->CategoryBis->updateCategory($data);
+            $resule = (new CategoryBis())->updateById($data);
         } catch (\Exception $e) {
             return Show::error($e->getError());
         }
@@ -171,7 +167,7 @@ class Category extends BaseController
         }
 
         try {
-            $resule = $this->CategoryBis->updateCategory($data);
+            $resule = (new CategoryBis())->updateById($data);
         } catch (\Exception $e) {
             return Show::error($e->getMessage());
         }
@@ -184,7 +180,7 @@ class Category extends BaseController
 
     public function dialog(){
         //获取正常的一级分类数据
-        $result = $this->CategoryBis->getNormalByPid();
+        $result = (new CategoryBis())->getNormalByPid();
         return view("",[
             "categorys" => json_encode($result),
         ]);
@@ -197,7 +193,7 @@ class Category extends BaseController
     public function getByPid()
     {
         $pid = input("param.pid", 0, "intval");
-        $result = $this->CategoryBis->getNormalByPid($pid);
+        $result = (new CategoryBis())->getNormalByPid($pid);
         return Show::success($result);
     }
 }

@@ -29,4 +29,43 @@ class BaseBis {
         }
         return $this->model->id;
     }
+
+    public function getLists($data, $num) {
+        try {
+            $list = $this->model->getLists($data, $num);
+        } catch (\Exception $e) {
+            return \app\common\lib\Arr::getPaginateDefaultData($num);
+        }
+
+        $result = $list->toArray();
+        $result['render'] = $list->render();
+        return $result;
+    }
+
+
+    /**
+     * 更新记录，data需要传入主键id
+     * @param $data
+     * @return mixed
+     * @throws \think\Exception
+     */
+    public function updateById($data) {
+        if (empty($data['id'])) {
+            throw new \think\Exception("id异常");
+        }
+        $res = $this->model->getFieldById($data['id']);
+        if (empty($res)) {
+            throw new \think\Exception("不存在该记录");
+        }
+
+        $data['update_time'] = time();
+
+        try {
+            $result = $res->save($data);
+        } catch (\Exception $e) {
+            throwE($e, config('status.update_error'), "更新数据失败");
+        }
+        return $result;
+
+    }
 }

@@ -195,7 +195,7 @@
             })
         }
 
-        // 删除二级分类
+        // 删除分类
         $('.delete').on('click', function () {
             let ptype = $(this).attr('data-ptype'); // fu
             let id = $(this).attr('data-id'); // fu
@@ -213,7 +213,7 @@
                 })
 
             })
-        })
+        });
 
         $('.changeOrder').on('change',function () {
             let id = $(this).attr('data-id');
@@ -231,7 +231,7 @@
                 }
             })
 
-        })
+        });
 
 
     })

@@ -33,16 +33,7 @@ class Goods extends BaseController
             $goods = \app\common\lib\Arr::getPaginateDefaultData($num);
         }
 
-        $filter['query'] = '';
-        $query_array = explode("&",$this->request->query());
-        if (count($query_array) > 1){
-            unset($query_array[0]);
-            foreach ($query_array as $v){
-                if (!strstr($v, "page=") && !empty($v)){
-                    $filter['query'] .= "&".$v;
-                }
-            }
-        }
+        $filter['query'] = \app\common\lib\Filter::getFilter($this->request->query());
 
         View::assign('filter',$filter);
         View::assign('goods',$goods);

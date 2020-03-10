@@ -186,9 +186,14 @@ class Goods extends BaseController
         if (!$validate->check($data)) {
             return Show::error($validate->getError());
         }
+        $GoodsBisOjb = new GoodsBis();
+        $good_info = $GoodsBisOjb->getInfoById($data['id']);
+        if (empty($good_info['big_image']) && $is_index_recommend == 1) {
+            return Show::error("该产品没有大图");
+        }
 
         try {
-            $resule = (new GoodsBis())->updateById($data);
+            $resule = $GoodsBisOjb->updateById($data);
         } catch (\Exception $e) {
             return Show::error($e->getMessage());
         }

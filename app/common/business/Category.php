@@ -126,27 +126,6 @@ class Category extends BaseBis {
     }
 
     /**
-     * 根据id获取栏目信息
-     * @param $id
-     * @return array
-     * @throws \think\Exception
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\DbException
-     * @throws \think\db\exception\ModelNotFoundException
-     */
-    public function getInfoById($id) {
-        if (empty($id)) {
-            throw new \think\Exception("id参数错误");
-        }
-        $category = $this->model->getFieldById($id);
-        if (empty($category)) {
-            throw new \think\Exception("不存在该记录");
-        }
-
-        return $category->toArray();
-    }
-
-    /**
      * 获取面包屑导航
      * @param $pid
      * @return array|bool

@@ -33,4 +33,36 @@ class Goods extends BaseModel
     public function searchCreateTimeAttr($query,$value){
         $query->whereBetweenTime('create_time',$value[0], $value[1]);
     }
+
+    /**
+     * 获取首页推荐大图
+     * @param $data
+     * @param string $field
+     * @param int $limit
+     * @return \think\Collection
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getRotationChart($data,$field = "*",$limit = 5) {
+        $order = [
+            "listorder" => "desc",
+            "id"        => "desc",
+        ];
+        $res = $this->where('big_image','<>','')
+            ->where('status',config('status.mysql.table_normal'))
+            ->where($data)
+            ->field($field)
+            ->order($order)
+            ->limit($limit)
+            ->select();
+        return $res;
+    }
+
+    public function getImageAttr($value) {
+        if (!strstr($value, 'http')){
+            return request()->domain().$value;
+        }
+        return $value;
+    }
 }

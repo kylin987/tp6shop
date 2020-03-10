@@ -2,7 +2,7 @@
 namespace app\common\lib;
 
 /**
- * 数字相关的业务逻辑
+ * 筛选的业务逻辑
  */
 class Filter
 {

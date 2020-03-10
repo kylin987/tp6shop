@@ -84,4 +84,19 @@ class Goods extends BaseBis {
 
     }
 
+
+    public function getRotationChart() {
+        $data = [
+            'is_index_recommend' => 1,
+        ];
+        $num = 5;
+        $field = "sku_id,title,big_image as image";
+        try {
+            $res = $this->model->getRotationChart($data, $field, $num);
+        }catch (\Exception $e){
+            return [];
+        }
+        return $res->toArray();
+    }
+
 }

@@ -3,6 +3,7 @@
 namespace app\common\business;
 use think\facade\Session;
 use think\facade\Log;
+
 /**
 * 基础BaseBis
 */
@@ -12,10 +13,11 @@ class BaseBis {
 
     public function initialize()
     {
-
-        $adminUser = Session::get(config('admin.session_admin'));
-        if ($adminUser && isset($adminUser['username'])) {
-            $this->adminUser = $adminUser['username'];
+        if (strstr("admin",request()->root())){
+            $adminUser = Session::get(config('admin.session_admin'));
+            if ($adminUser && isset($adminUser['username'])) {
+                $this->adminUser = $adminUser['username'];
+            }
         }
     }
 
@@ -70,6 +72,31 @@ class BaseBis {
             throwE($e, config('status.update_error'), "更新数据失败");
         }
         return $result;
+    }
 
+    /**
+     * 根据id获取单条信息
+     * @param $id
+     * @return array
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function getInfoById($id) {
+        if (empty($id)) {
+            throw new \think\Exception("id参数错误");
+        }
+        try {
+            $info = $this->model->getFieldById($id);
+        }catch (\Exception $e) {
+            throwE($e, $e->getCode(), "当前记录不存在");
+        }
+
+        if (empty($info)) {
+            throw new \think\Exception("不存在该记录");
+        }
+
+        return $info->toArray();
     }
 }

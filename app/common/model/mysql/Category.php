@@ -84,4 +84,22 @@ class Category extends BaseModel
         return $res;
     }
 
+
+    public function getCategoryTreeByPids($categoryIds){
+        $order = [
+            "listorder" => "desc",
+            "id"        => "desc",
+        ];
+        $field = "id,name,pid";
+        $where[] = ['id|pid', 'in', $categoryIds];
+        $where[] = ['status', '=', config('status.mysql.table_normal')];
+
+        $res = $this->where($where)
+            ->order($order)
+            ->field($field)
+            ->select();
+
+        //echo $this->getLastSql();exit;
+        return $res;
+    }
 }

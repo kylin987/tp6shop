@@ -30,7 +30,7 @@ class ClassArr
         //如果不是静态的，那么需要返回 实例化的对象
 
         if (!array_key_exists($type, $class)) {
-            return false;
+            throw new \Exception("类型：{$type}的类库找不到");
         }
 
         $className = $class[$type];

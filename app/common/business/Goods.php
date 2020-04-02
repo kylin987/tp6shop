@@ -3,6 +3,7 @@
 namespace app\common\business;
 use app\common\model\mysql\Goods as GoodsModel;
 use app\common\business\GoodsSku as GoodsSkuBis;
+use app\common\business\Category;
 use think\facade\Log;
 
 class Goods extends BaseBis {
@@ -14,6 +15,11 @@ class Goods extends BaseBis {
         $this->model = new GoodsModel();
     }
 
+    /**
+     * 新增插入商品
+     * @param $data
+     * @return bool
+     */
     public function insertData($data){
         //开启一个事务
         $this->model->startTrans();
@@ -84,15 +90,54 @@ class Goods extends BaseBis {
 
     }
 
-
+    /**
+     * 获取首页推荐商品大图
+     * @return array
+     */
     public function getRotationChart() {
         $data = [
             'is_index_recommend' => 1,
         ];
         $num = 5;
-        $field = "sku_id,title,big_image as image";
+        $field = "sku_id as id,title,big_image as image";
         try {
             $res = $this->model->getRotationChart($data, $field, $num);
+        }catch (\Exception $e){
+            return [];
+        }
+        return $res->toArray();
+    }
+
+    public function categoryGoodsRecommend($categoryIds) {
+        if (!$categoryIds){
+            return [];
+        }
+
+        $categoryTree = (new Category())->getCategoryTreeByPids($categoryIds);
+        if (!$categoryTree){
+            return [];
+        }
+        $result = [];
+        foreach ($categoryTree as $k=>$v){
+            if (isset($v['pid'])){
+                unset($v['pid']);
+            }
+            $result[$k]['categorys'] = $v;
+        }
+        //防止产品和栏目对应不上，直接用$result来foreach
+        foreach($result as $key => $value) {
+            $result[$key]['goods'] = $this->getNormalGoodsFindInSetCategoryId($value['categorys']['category_id']);
+        }
+
+        return $result;
+    }
+
+    public function getNormalGoodsFindInSetCategoryId($categoryId) {
+        $field = "sku_id as id, title, price, recommend_image as image";
+        $limit = 10;
+
+        try {
+            $res = $this->model->getNormalGoodsFindInSetCategoryId($categoryId, $field,$limit);
         }catch (\Exception $e){
             return [];
         }

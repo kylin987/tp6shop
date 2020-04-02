@@ -65,4 +65,21 @@ class Goods extends BaseModel
         }
         return $value;
     }
+
+    public function getNormalGoodsFindInSetCategoryId($categoryId, $field = true, $limit = 10){
+        $order = [
+            "listorder" => "desc",
+            "id"        => "desc",
+        ];
+
+        $res = $this->whereFindInSet("category_path_id", $categoryId)
+            ->where("status", "=", config("status.mysql.table_normal"))
+            ->field($field)
+            ->order($order)
+            ->limit($limit)
+            ->select();
+        //echo $this->getLastSql();exit;
+        return $res;
+    }
+
 }

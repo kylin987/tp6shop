@@ -95,7 +95,7 @@ class Curl
         $sContent = curl_exec($oCurl);
         $aStatus = curl_getinfo($oCurl);
         curl_close($oCurl);
-        dump(json_decode($sContent));
+        //dump(json_decode($sContent));
         if(intval($aStatus["http_code"])==200){
             return $sContent;
         }else{

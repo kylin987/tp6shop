@@ -110,8 +110,7 @@ class Category extends BaseController
         //如果是新增插入栏目，并且非一级栏目，要回写path
         if(!$id && $pid != 0){
             $Adata = [
-                'id' =>$result,
-                'name' =>$name,
+                'id' =>$result
             ];
             //如果上级为一级栏目
             if ($pInfo['pid'] == 0){

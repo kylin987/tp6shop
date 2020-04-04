@@ -5,7 +5,6 @@ use app\common\business\Category as CategoryBis;
 use app\common\lib\Show;
 use app\common\lib\Arr;
 use think\facade\Log;
-use think\facade\Db;
 /**
  * 
  */

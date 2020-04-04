@@ -50,17 +50,18 @@ class Category extends BaseBis {
      * @throws \think\db\exception\ModelNotFoundException
      */
     public function edit($data) {
-        $res = $this->model->getCategoryByName($data['name']);
-        /**
-        1、不修改名字，那么获得的是本栏目信息，允许修改
-        2、修改为一个未用的名字，那么res为空，允许修改
-        3、修改为一个已存在的，并且为别的栏目的名字，那么获得的是别的栏目信息，不允许修改
-        */
-        //如果为3
-        if ($res && $res['id'] != $data['id']) {
-            throw new \think\Exception("分类名已存在");
+        if (isset($data['name']) && !empty($data['name'])){
+            $res = $this->model->getCategoryByName($data['name']);
+            /**
+            1、不修改名字，那么获得的是本栏目信息，允许修改
+            2、修改为一个未用的名字，那么res为空，允许修改
+            3、修改为一个已存在的，并且为别的栏目的名字，那么获得的是别的栏目信息，不允许修改
+             */
+            //如果为3
+            if ($res && $res['id'] != $data['id']) {
+                throw new \think\Exception("分类名已存在");
+            }
         }
-
 
         try {
             $result = $this->updateById($data);

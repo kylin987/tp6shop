@@ -57,6 +57,10 @@ class Category extends BaseController
     /**
      * 新增/编辑栏目保存
      * @return \think\response\Json
+     * @throws \think\Exception
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
      */
     public function save() {
         $pid = input("param.pid", 0, "intval");
@@ -125,7 +129,19 @@ class Category extends BaseController
             }
         }
 
+        //更新redis内的栏目信息
+        try {
+            $CategoryBis->updateCategoryRedisInfo();
+        }catch (\Exception $e){
+            return Show::error("新增栏目成功，缓存数据未更新成功。".$e->getMessage());
+        }
+
         return Show::success($result);
+    }
+
+    public function abc(){
+
+
     }
 
     public function edit() {

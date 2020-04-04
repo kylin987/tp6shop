@@ -4,6 +4,7 @@ namespace app\common\business;
 use app\common\model\mysql\Category as CategoryModel;
 use think\facade\Log;
 use app\common\lib\Arr;
+use think\facade\Cache;
 
 class Category extends BaseBis {
 
@@ -80,7 +81,7 @@ class Category extends BaseBis {
      * @throws \think\db\exception\ModelNotFoundException
      */
     public function getNormalCategorys() {
-        $field = "id, name, pid";
+        $field = "id, name, pid,path";
         $categorys = $this->model->getNormalCategorys($field);
         if (!$categorys) {
             return [];
@@ -170,6 +171,11 @@ class Category extends BaseBis {
         return $res->toArray();
     }
 
+    /**
+     * 根据上级id获取下级所有栏目并和上级拼成树状结构
+     * @param array $categoryIds
+     * @return array
+     */
     public function getCategoryTreeByPids($categoryIds = []){
         if (!is_array($categoryIds)){
             return [];
@@ -180,5 +186,19 @@ class Category extends BaseBis {
             return [];
         }
         return Arr::getTree($categoryInfo);
+    }
+
+    public function updateCategoryRedisInfo(){
+        $arr = $this->getNormalCategorys();
+
+        Cache::store('redis')->del(config('redis.category_pre'));
+        foreach ($arr as $v){
+            Cache::store('redis')->hSet(config('redis.category_pre'), $v['id'], json_encode($v));
+        }
+        $tree = Arr::getTree($arr);
+        Cache::store('redis')->del(config('redis.category_tree'));
+        foreach ($tree as $v) {
+            Cache::store('redis')->hSet(config('redis.category_tree_pre'), $v['category_id'], json_encode($v));
+        }
     }
 }

@@ -21,17 +21,27 @@ class Category extends ApiBase
      * @return [type] [description]
      */
     public function index(){
-        try {
-            $categorys = $this->CategoryBis->getNormalCategorys();
-        } catch(\Exception $e){
-            Log::error("getNormalCategorys-error".$e->getMessage());
-            return Show::success("","内部异常");
+        $result = [];
+        $categoryInfo = $this->CategoryBis->getCategoryRedisInfo();
+        if (!empty($categoryInfo)){
+            foreach ($categoryInfo as $value){
+                $result[] = json_decode($value,true);
+            }
+        }else{
+            try {
+                $categorys = $this->CategoryBis->getNormalCategorys();
+            } catch(\Exception $e){
+                Log::error("getNormalCategorys-error".$e->getMessage());
+                return Show::success("","内部异常");
+            }
+            if (empty($categorys)) {
+                return Show::success("","数据为空");
+            }
+
+            $result = Arr::getTree($categorys);
         }
-        if (empty($categorys)) {
-            return Show::success("","数据为空");
-        }
-        
-        $result = Arr::getTree($categorys);
+
+
         $result = Arr::sliceTreeArr($result);
         return Show::success($result);
     }

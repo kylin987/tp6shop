@@ -188,6 +188,12 @@ class Category extends BaseBis {
         return Arr::getTree($categoryInfo);
     }
 
+    /**
+     * 更新栏目的redis内容
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function updateCategoryRedisInfo(){
         $arr = $this->getNormalCategorys();
 
@@ -200,5 +206,34 @@ class Category extends BaseBis {
         foreach ($tree as $v) {
             Cache::store('redis')->hSet(config('redis.category_tree_pre'), $v['category_id'], json_encode($v));
         }
+    }
+
+    /**
+     * 获取redis里的栏目信息
+     * @param bool $is_tree，获取树状结构
+     * @param bool $is_all，获取所有
+     * @param array $ids
+     * @return array
+     */
+    public function getCategoryRedisInfo($is_tree = true, $is_all = true, $ids = []){
+        if ($is_tree){
+            $key = config('redis.category_tree_pre');
+        }else{
+            $key = config('redis.category_pre');
+        }
+
+        if ($is_all){
+            return Cache::store('redis')->hGetAll($key);
+        }
+
+        if (!is_array($ids) || empty($ids)){
+            return [];
+        }
+
+        $result =[];
+        foreach ($ids as $id){
+            $result[] = Cache::store('redis')->hGet($key, $id);
+        }
+        return $result;
     }
 }

@@ -80,15 +80,50 @@ class Category extends BaseController
             return Show::error($validate->getError());
         }
 
+        $CategoryBis = new CategoryBis();
+        //获取上级栏目信息
+        if ($pid != 0){
+            $pInfo = $CategoryBis->getInfoById($pid);
+        }
+
+        //如果是编辑更新并且非一级栏目才处理path，因为一级栏目没有path
+        if ($id && $pid != 0){
+            //如果上级为一级栏目
+            if ($pInfo['pid'] == 0){
+                $data['path'] = $pInfo['id'].",".$id;
+            }else{
+                $data['path'] = $pInfo['path'].",".$id;
+            }
+        }
+
         try {
             if ($id){
-                $result = (new CategoryBis())->edit($data);
+                $result = $CategoryBis->edit($data);
             } else {
-                $result = (new CategoryBis())->add($data);
+                $result = $CategoryBis->add($data);
             }
 
         } catch (\Exception $e) {
-            return Show::error($e->getError());
+            return Show::error($e->getMessage());
+        }
+
+        //如果是新增插入栏目，并且非一级栏目，要回写path
+        if(!$id && $pid != 0){
+            $Adata = [
+                'id' =>$result,
+                'name' =>$name,
+            ];
+            //如果上级为一级栏目
+            if ($pInfo['pid'] == 0){
+                $Adata['path'] = $pInfo['id'].",".$result;
+            }else{
+                $Adata['path'] = $pInfo['path'].",".$result;
+            }
+            try {
+                $result = $CategoryBis->edit($Adata);
+            }catch (\Exception $e){
+                return Show::error("新增栏目成功，但path未写入。".$e->getMessage());
+            }
         }
 
         return Show::success($result);

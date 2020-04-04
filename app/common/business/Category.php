@@ -63,7 +63,7 @@ class Category extends BaseBis {
 
 
         try {
-            $result = $this->updateCategory($data);
+            $result = $this->updateById($data);
         } catch (\Exception $e) {
             throwE($e, config('status.error'), "服务内部异常");
         }

@@ -215,7 +215,7 @@ class Category extends BaseBis {
      * @param array $ids
      * @return array
      */
-    public function getCategoryRedisInfo($is_tree = true, $is_all = true, $ids = []){
+    public function getCategoryRedisInfo($is_tree = true, $is_all = true, $ids = ""){
         if ($is_tree){
             $key = config('redis.category_tree_pre');
         }else{
@@ -226,14 +226,58 @@ class Category extends BaseBis {
             return Cache::store('redis')->hGetAll($key);
         }
 
-        if (!is_array($ids) || empty($ids)){
+        if (empty($ids)){
             return [];
         }
 
         $result =[];
-        foreach ($ids as $id){
-            $result[] = Cache::store('redis')->hGet($key, $id);
+        if (is_array($ids)){
+            foreach ($ids as $id){
+                $result[] = Cache::store('redis')->hGet($key, $id);
+            }
+        }else{
+            $result = Cache::store('redis')->hGet($key, $ids);
         }
+
+        return $result;
+    }
+
+
+    public function getUpDownCategoryList($categoryId){
+        $categoryInfo = $this->getCategoryRedisInfo(0,0,$categoryId);
+        if (empty($categoryInfo)){
+            return [];
+        }
+        $categoryInfo = json_decode($categoryInfo,true);
+        //dump($categoryInfo);
+
+        /*
+        1、确定是几级分类
+        2、如果是一级分类，那么查询所有二级，和第一个二级的所有3级
+        3、如果是2级分类，那么查询上级分类，和同级分类，和它的所有下级（3级）
+        4、如果是3级分类，那么查询path的一级分类，和该一级分类的所有下级（2级）和它上级的同级分类
+        */
+
+        //如果是一级分类
+        if($categoryInfo['pid'] == 0) {
+            $tree = json_decode($this->getCategoryRedisInfo(1,0,$categoryInfo['id']),true);
+            $result = Arr::doSearchCategoryList($tree);
+            return $result;
+        }
+
+        $path = explode(",", $categoryInfo['path']);
+        $len = count($path);
+        $tree = json_decode($this->getCategoryRedisInfo(1,0,$path[0]),true);
+        if ($len == 2){
+            //如果是二级分类
+            $result = Arr::doSearchCategoryList($tree,false, $categoryInfo['id']);
+        }elseif($len == 3){
+            //如果是三级分类
+            $result = Arr::doSearchCategoryList($tree,false, $path[1],$categoryInfo['id']);
+        }
+
+
+        //dump($result);exit;
         return $result;
     }
 }

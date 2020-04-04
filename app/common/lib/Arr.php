@@ -67,4 +67,69 @@ class Arr
         ];
         return $result;
     }
+
+
+    /**
+     * 处理栏目上下级的显示
+     * @param $tree
+     * @param bool $isFirst
+     * @param string $secondId
+     * @param string $threeId
+     * @return array
+     */
+    public static function doSearchCategoryList($tree, $isFirst = true, $secondId = "", $threeId = ""){
+        $result = [
+            'name'  => '',
+            'focus_ids'=> [],
+            'list'  => [],
+        ];
+        $result['name'] = $tree['name'];
+        if (isset($tree['list'])){
+            foreach ($tree['list'] as $k=>$v){
+                unset($tree['list'][$k]['pid']);
+                unset($tree['list'][$k]['path']);
+                $tree['list'][$k]['id'] = $v['category_id'];
+                unset($tree['list'][$k]['category_id']);
+
+                if ($isFirst){
+                    if ($k == 0 && isset($v['list'])){
+                        $three = $v['list'];
+                    }
+                }
+
+                if ($secondId){
+                    if ($v['category_id'] == $secondId && isset($v['list'])){
+                        $three = $v['list'];
+                        $result['focus_ids'][] = $v['category_id'];
+                    }
+                }
+
+                if (isset($v['list'])){
+                    unset($tree['list'][$k]['list']);
+                }
+
+            }
+            $result['list'][] = $tree['list'];
+            if (isset($three)){
+                foreach ($three as $k=>$v){
+                    unset($three[$k]['pid']);
+                    unset($three[$k]['path']);
+                    $three[$k]['id'] = $v['category_id'];
+                    unset($three[$k]['category_id']);
+                    if (isset($three[$k]['list'])){
+                        unset($three[$k]['list']);
+                    }
+                    if ($threeId){
+                        if ($v['category_id'] == $threeId){
+                            $result['focus_ids'][] = $v['category_id'];
+                        }
+                    }
+                }
+                $result['list'][] = $three;
+            }
+        }
+
+
+        return $result;
+    }
 }

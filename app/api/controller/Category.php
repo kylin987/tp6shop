@@ -4,7 +4,6 @@ namespace app\api\controller;
 use app\common\business\Category as CategoryBis;
 use app\common\lib\Show;
 use app\common\lib\Arr;
-use think\facade\Cache;
 use think\facade\Log;
 /**
  * 
@@ -47,6 +46,10 @@ class Category extends ApiBase
         return Show::success($result);
     }
 
+    /**
+     * 按分类检索Api
+     * @return \think\response\Json
+     */
     public function search(){
         $id = input("param.id", "", "intval");
         if (empty($id)){
@@ -54,6 +57,22 @@ class Category extends ApiBase
         }
         try {
             $result = $this->CategoryBis->getUpDownCategoryList($id);
+        }catch (\Exception $e){
+            Log::error("search-error".$e->getMessage());
+            return Show::success("","内部异常");
+        }
+
+        return Show::success($result);
+    }
+
+    public function sub(){
+        $id = input("param.id", "", "intval");
+        if (empty($id)){
+            return Show::success();
+        }
+
+        try {
+            $result = $this->CategoryBis->getDownCategoryList($id);
         }catch (\Exception $e){
             Log::error("search-error".$e->getMessage());
             return Show::success("","内部异常");

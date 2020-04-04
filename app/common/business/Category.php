@@ -205,6 +205,11 @@ class Category extends BaseBis {
         Cache::store('redis')->del(config('redis.category_tree'));
         foreach ($tree as $v) {
             Cache::store('redis')->hSet(config('redis.category_tree_pre'), $v['category_id'], json_encode($v));
+            if (isset($v['list'])){
+                foreach ($v['list'] as $value){
+                    Cache::store('redis')->hSet(config('redis.category_tree_pre'), $value['category_id'], json_encode($value));
+                }
+            }
         }
     }
 
@@ -242,7 +247,11 @@ class Category extends BaseBis {
         return $result;
     }
 
-
+    /**
+     * 获取上下级分类的信息
+     * @param $categoryId
+     * @return array
+     */
     public function getUpDownCategoryList($categoryId){
         $categoryInfo = $this->getCategoryRedisInfo(0,0,$categoryId);
         if (empty($categoryInfo)){
@@ -278,6 +287,24 @@ class Category extends BaseBis {
 
 
         //dump($result);exit;
+        return $result;
+    }
+
+    /**
+     * 获取下级分类名称
+     * @param $categoryId
+     * @return array
+     */
+    public function getDownCategoryList($categoryId){
+        $tree = json_decode($this->getCategoryRedisInfo(1,0,$categoryId),true);
+        $result = [];
+
+        if (isset($tree['list'])){
+            foreach ($tree['list'] as $k=>$v){
+                $result[$k]['id'] = $v['category_id'];
+                $result[$k]['name'] = $v['name'];
+            }
+        }
         return $result;
     }
 }

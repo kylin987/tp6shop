@@ -44,8 +44,6 @@ class Category extends ApiBase
             $result = Arr::getTree($categorys);
         }
 
-
-
         $result = Arr::sliceTreeArr($result);
         if (!empty($result)){
             array_multisort(array_column($result,'listorder'), SORT_DESC, $result);

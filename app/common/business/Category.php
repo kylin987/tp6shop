@@ -300,6 +300,8 @@ class Category extends BaseBis {
         $result = [];
 
         if (isset($tree['list'])){
+            //排序
+            array_multisort(array_column($tree['list'],'listorder'), SORT_DESC, $tree['list']);
             foreach ($tree['list'] as $k=>$v){
                 $result[$k]['id'] = $v['category_id'];
                 $result[$k]['name'] = $v['name'];

@@ -39,12 +39,18 @@ class Arr
      * @return array
      */
     public static function sliceTreeArr($data, $firstCount = 5, $secondCount = 3, $threeCount = 5){
+        //排序
+        array_multisort(array_column($data,'listorder'), SORT_DESC, $data);
         $data = array_slice($data, 0, $firstCount);
         foreach ($data as $k => $v) {
             if (!empty($v['list'])) {
+                //排序
+                array_multisort(array_column($v['list'],'listorder'), SORT_DESC, $v['list']);
                 $data[$k]['list'] = array_slice($v['list'], 0 , $secondCount);
                 foreach ($data[$k]['list'] as $kk => $vv) {
                      if (!empty($vv['list'])) {
+                         //排序
+                         array_multisort(array_column($vv['list'],'listorder'), SORT_DESC, $vv['list']);
                          $data[$k]['list'][$kk]['list'] = array_slice($vv['list'], 0, $threeCount);
                      }
                  } 
@@ -85,9 +91,10 @@ class Arr
         ];
         $result['name'] = $tree['name'];
         if (isset($tree['list'])){
+            $tree['list'] = self::del_key($tree['list'], ['pid','path']);
+            //排序
+            array_multisort(array_column($tree['list'],'listorder'), SORT_DESC, $tree['list']);
             foreach ($tree['list'] as $k=>$v){
-                unset($tree['list'][$k]['pid']);
-                unset($tree['list'][$k]['path']);
                 $tree['list'][$k]['id'] = $v['category_id'];
                 unset($tree['list'][$k]['category_id']);
 
@@ -111,9 +118,9 @@ class Arr
             }
             $result['list'][] = $tree['list'];
             if (isset($three)){
+                //排序
+                array_multisort(array_column($three,'listorder'), SORT_DESC, $three);
                 foreach ($three as $k=>$v){
-                    unset($three[$k]['pid']);
-                    unset($three[$k]['path']);
                     $three[$k]['id'] = $v['category_id'];
                     unset($three[$k]['category_id']);
                     if (isset($three[$k]['list'])){

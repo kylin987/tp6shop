@@ -81,7 +81,7 @@ class Category extends BaseBis {
      * @throws \think\db\exception\ModelNotFoundException
      */
     public function getNormalCategorys() {
-        $field = "id, name, pid,path";
+        $field = "id, name, pid, path, listorder";
         $categorys = $this->model->getNormalCategorys($field);
         if (!$categorys) {
             return [];

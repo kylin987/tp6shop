@@ -188,6 +188,12 @@ class Category extends BaseController
         }
 
         if ($resule) {
+            //更新redis内的栏目信息
+            try {
+                (new CategoryBis())->updateCategoryRedisInfo();
+            }catch (\Exception $e){
+                return Show::error("新增栏目成功，缓存数据未更新成功。".$e->getMessage());
+            }
             return Show::success($resule,"排序成功");
         }
         return Show::error("排序失败");
@@ -223,6 +229,12 @@ class Category extends BaseController
         }
 
         if ($resule) {
+            //更新redis内的栏目信息
+            try {
+                (new CategoryBis())->updateCategoryRedisInfo();
+            }catch (\Exception $e){
+                return Show::error("新增栏目成功，缓存数据未更新成功。".$e->getMessage());
+            }
             return Show::success($resule, "更新成功");
         }
         return Show::error("更新失败");

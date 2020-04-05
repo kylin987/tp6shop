@@ -25,7 +25,10 @@ class Category extends ApiBase
         $categoryInfo = $this->CategoryBis->getCategoryRedisInfo();
         if (!empty($categoryInfo)){
             foreach ($categoryInfo as $value){
-                $result[] = json_decode($value,true);
+                $arr = json_decode($value,true);
+                if ($arr['pid'] == 0){
+                    $result[] = json_decode($value,true);
+                }
             }
         }else{
             try {
@@ -42,7 +45,13 @@ class Category extends ApiBase
         }
 
 
+
         $result = Arr::sliceTreeArr($result);
+        if (!empty($result)){
+            array_multisort(array_column($result,'listorder'), SORT_DESC, $result);
+
+        }
+        $result = Arr::del_key($result,['pid','path','listorder']);
         return Show::success($result);
     }
 

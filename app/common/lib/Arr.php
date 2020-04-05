@@ -132,4 +132,30 @@ class Arr
 
         return $result;
     }
+
+    /**
+     * 利用递归删除数组中的某些key
+     * @param $array
+     * @param array $keys
+     * @return mixed
+     */
+    public static function del_key($array, $keys = []){
+        if (empty($array) || !is_array($array) || empty($keys) || !is_array($keys)){
+            return $array;
+        }
+
+        foreach ($array as $k=>$v){
+            foreach ($keys as $value){
+                if (isset($v[$value])){
+                    unset($v[$value]);
+                }
+            }
+
+            if (isset($v['list'])){
+                $v['list'] = self::del_key($v['list'], $keys);
+            }
+            $data[$k] = $v;
+        }
+        return $data;
+    }
 }

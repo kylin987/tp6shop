@@ -108,6 +108,11 @@ class Goods extends BaseBis {
         return $res->toArray();
     }
 
+    /**
+     * 获取首页分类和产品
+     * @param $categoryIds
+     * @return array
+     */
     public function categoryGoodsRecommend($categoryIds) {
         if (!$categoryIds){
             return [];
@@ -132,6 +137,11 @@ class Goods extends BaseBis {
         return $result;
     }
 
+    /**
+     * 根据栏目id获得10个商品
+     * @param $categoryId
+     * @return array
+     */
     public function getNormalGoodsFindInSetCategoryId($categoryId) {
         $field = "sku_id as id, title, price, recommend_image as image";
         $limit = 10;
@@ -144,4 +154,26 @@ class Goods extends BaseBis {
         return $res->toArray();
     }
 
+
+    public function getNormalLists($data, $pageSize, $order){
+        try {
+            $field = "sku_id as id,title,recommend_image as image,price,sales_count";
+            $list = $this->model->getNormalLists($data, $pageSize, $field, $order);
+            $res = $list->toArray();
+
+            $result = [
+                'total_page_num'    => isset($res['last_page']) ? $res['last_page'] : 0,
+                'count'             => isset($res['total']) ? $res['total'] : 0,
+                'page'              => isset($res['current_page']) ? $res['current_page'] : 0,
+                'page_size'         => $pageSize,
+                'list'              => isset($res['data']) ? $res['data'] : [],
+            ];
+
+        }catch (\Exception $e){
+            Log::error("getNormalLists-".$e->getMessage());
+            return [];
+        }
+
+        return $result;
+    }
 }

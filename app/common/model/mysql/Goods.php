@@ -82,4 +82,21 @@ class Goods extends BaseModel
         return $res;
     }
 
+    public function getNormalLists($data, $pageSize = 10, $field = true, $order){
+        $res = $this;
+        if (isset($data['category_path_id'])){
+            $res = $this->whereFindInSet('category_path_id', $data['category_path_id']);
+            unset($data['category_path_id']);
+        }
+        if (isset($data['title'])){
+            $res = $res->withSearch(['title'], $data);
+        }
+
+        $list = $res->where("status", "=", config("status.mysql.table_normal"))
+            ->field($field)
+            ->order($order)
+            ->paginate($pageSize);
+        //echo $this->getLastSql();exit;
+        return $list;
+    }
 }
